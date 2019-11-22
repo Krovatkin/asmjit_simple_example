@@ -124,15 +124,18 @@ void generateLoopNested(int dimensions[], int rank) {
 	
     // loop body
     cc.bind(L_Loop);                        // Bind the beginning of the loop here.
-    auto xmm_a = cc.newXmmPs("a");
-    cc.movups(xmm_a, x86::dword_ptr(src1, start));
-    auto xmm_b = cc.newXmmPs("b");
-    cc.movups(xmm_b, x86::dword_ptr(src2, start));
-    cc.addps(xmm_a, xmm_b);
-    cc.movups(x86::dword_ptr(dst, start), xmm_a);
+    //auto xmm_a = cc.newXmmPs("a");
+	auto xmm_a = cc.newYmmPs("a");
+    cc.vmovups(xmm_a, x86::dword_ptr(src1, start));
+    //auto xmm_b = cc.newXmmPs("b");
+	auto xmm_b = cc.newYmmPs("b");
+	cc.vmovups(xmm_b, x86::dword_ptr(src2, start));
+	auto xmm_c = cc.newYmmPs("c");
+    cc.vaddps(xmm_c, xmm_a, xmm_b);
+    cc.vmovups(x86::dword_ptr(dst, start), xmm_c);
     
-	cc.add(start, 16);
-    cc.sub(cnt, 4);   
+	cc.add(start, 32);
+    cc.sub(cnt, 8);   
     cc.jnz(L_Loop);
     cc.bind(L_Exit);
     //compute start index for innermost loop

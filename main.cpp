@@ -5,6 +5,8 @@
 #include <deque>
 #include <string>
 
+#include "scalar_kernel.h"
+
 using namespace asmjit;
 
 
@@ -88,6 +90,7 @@ void generateLoopNested(int dimensions[], int rank) {
       //call_print->setArg(1, very_temp);
       //}
 
+	  // TODO: switch to count downs to reduce memory accesses
       cc.cmp(cnt, x86::dword_ptr(ends, i << 2));
       cc.jge(loop_exits.at(i));
 
@@ -107,6 +110,7 @@ void generateLoopNested(int dimensions[], int rank) {
     for (int i = 0; i < rank - 1; i++) {
       
       cc.mov(tmp, counters.at(i));
+	  //TODO: turn into shifts and adds
       cc.imul(tmp, static_cast<int>(strides.at(i)));
       cc.add(start, tmp);
     }
@@ -126,6 +130,7 @@ void generateLoopNested(int dimensions[], int rank) {
     cc.bind(L_Loop);                        // Bind the beginning of the loop here.
     //auto xmm_a = cc.newXmmPs("a");
 	auto xmm_a = cc.newYmmPs("a");
+	//TODO: switch to aligned movs
     cc.vmovups(xmm_a, x86::dword_ptr(src1, start));
     //auto xmm_b = cc.newXmmPs("b");
 	auto xmm_b = cc.newYmmPs("b");

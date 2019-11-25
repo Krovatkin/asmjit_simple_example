@@ -8,8 +8,6 @@ include("asmjit/CMakeLists.txt")
 #include_Directories(${ASMJIT_DIR})
 
 # Then in your target you should be able to use:
-add_executable(my_test main.cpp)
+add_executable(my_test main.cpp scalar_kernel.cpp)
 #target_link_libraries(my_test asmjit ${ASMJIT_DEPS})
 target_link_libraries(my_test asmjit)
-
-
